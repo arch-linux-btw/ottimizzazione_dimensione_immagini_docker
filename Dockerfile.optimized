@@ -1,0 +1,66 @@
+# =============================================================================
+# STAGE 1 — "builder"
+# Scopo: installare le dipendenze Python in un ambiente isolato.
+# Questo stage viene SCARTATO nell'immagine finale: porta con sé pip,
+# compilatori C (per pacchetti con estensioni native) e cache,
+# che non vogliamo in produzione.
+# =============================================================================
+FROM python:3.12-alpine AS builder
+
+# Impostiamo la directory di lavoro nello stage builder
+WORKDIR /install
+
+# ── Perché COPY requirements.txt PRIMA di COPY . . ? ──────────────────────
+# Docker costruisce i layer in sequenza e li mette in cache.
+# Se copiamo solo requirements.txt prima, questo layer viene rieseguito
+# SOLO quando requirements.txt cambia. Il codice app cambia molto più
+# spesso delle dipendenze → risparmio enorme di tempo nei rebuild.
+COPY app/requirements.txt .
+
+# Installiamo le dipendenze in una cartella dedicata (/install/deps)
+# --no-cache     → non salva la cache di pip nell'immagine (riduce dimensione)
+# --prefix       → installa tutto in /install/deps invece di /usr/local
+#                  così possiamo copiare solo questa cartella nello stage finale
+RUN pip install --no-cache-dir --prefix=/install/deps -r requirements.txt
+
+
+# =============================================================================
+# STAGE 2 — immagine finale
+# Scopo: immagine minimale, sicura, pronta per la produzione.
+# Partiamo di nuovo da alpine pulita — zero residui dello stage builder.
+# =============================================================================
+FROM python:3.12-alpine AS final
+
+WORKDIR /app
+
+# ── Perché python:3.12-alpine e non ubuntu/debian? ────────────────────────
+# Alpine Linux è una distribuzione ultra-leggera (~5MB base vs ~120MB debian).
+# L'immagine risultante sarà molto più piccola, con una superficie d'attacco
+# (attack surface) ridotta: meno pacchetti = meno vulnerabilità potenziali.
+
+# Copiamo le dipendenze compilate dallo stage builder
+# /install/deps contiene i pacchetti installati da pip con --prefix
+COPY --from=builder /install/deps /usr/local
+
+# ── Perché copiare il codice DOPO le dipendenze? ──────────────────────────
+# Stesso ragionamento del layer cache: le dipendenze cambiano raramente,
+# il codice app cambia spesso. Separando i COPY, Docker riusa la cache
+# del layer delle dipendenze ad ogni modifica del codice.
+COPY app/ .
+
+# ── Perché USER nobody? ───────────────────────────────────────────────────
+# Per default i container girano come root — un rischio di sicurezza:
+# se l'app viene compromessa, l'attaccante avrebbe privilegi root sul container.
+# "nobody" è un utente di sistema senza privilegi e senza home directory.
+USER nobody
+
+# Documentazione della porta esposta (non pubblica realmente la porta,
+# serve come metadato per chi legge il Dockerfile e per docker-compose)
+EXPOSE 5000
+
+# ── CMD vs ENTRYPOINT ────────────────────────────────────────────────────
+# CMD può essere sovrascritto da `docker run <image> <comando>`.
+# Usiamo la forma JSON (exec form) invece della shell form per:
+# - evitare un processo shell intermedio
+# - garantire che i segnali (SIGTERM per lo shutdown) arrivino direttamente a Python
+CMD ["python", "app.py"]
