@@ -1,0 +1,35 @@
+# Cache Python - generati automaticamente dall'interprete, inutili nell'immagine
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Controllo versione - la history Git non serve nell'immagine finale
+.git/
+.gitignore
+
+# Documentazione - utile per gli sviluppatori, non per il container
+*.md
+
+# Test - non devono girare in produzione
+tests/
+test_*.py
+
+# Variabili d'ambiente - MAI includere segreti nell'immagine!
+.env
+.env.*
+
+# Ambiente virtuale locale - le dipendenze le installiamo dentro Docker
+venv/
+.venv/
+env/
+
+# Editor e OS
+.DS_Store
+*.swp
+.idea/
+.vscode/
+
+# Docker stesso (evita ricorsione)
+Dockerfile*
+.dockerignore
