@@ -19,14 +19,6 @@ docker images | grep app
 
 ---
 
-# 2. Docker Images Output
-
-```bash
-INSERISCI QUI L'OUTPUT REALE
-```
-
----
-
 # 3. Image Size Comparison
 
 | Image | Base Image | Size |
