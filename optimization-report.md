@@ -19,7 +19,7 @@ docker images | grep app
 
 ---
 
-# 3. Image Size Comparison
+# 2. Image Size Comparison
 
 | Image | Base Image | Size |
 |---|---|---|
@@ -28,7 +28,7 @@ docker images | grep app
 
 ---
 
-# 4. Size Reduction Calculation
+# 3. Size Reduction Calculation
 
 Formula:
 
@@ -48,9 +48,9 @@ Calculation:
 
 ---
 
-# 5. Optimization Techniques Used
+# 4. Optimization Techniques Used
 
-## 5.1 Multi-stage Build
+## 4.1 Multi-stage Build
 
 ### What it is
 
@@ -88,7 +88,7 @@ This avoids shipping unnecessary files in production.
 
 ---
 
-## 5.2 Alpine Linux
+## 4.2 Alpine Linux
 
 ### What it is
 
@@ -114,7 +114,7 @@ Alpine includes only essential components.
 
 ---
 
-## 5.3 .dockerignore
+## 4.3 .dockerignore
 
 ### What it is
 
@@ -148,7 +148,7 @@ These files unnecessarily increase image size.
 
 ---
 
-## 5.4 Layer Caching
+## 4.4 Layer Caching
 
 ### What it is
 
@@ -175,7 +175,7 @@ If `requirements.txt` does not change, Docker reuses the cached dependency layer
 
 ---
 
-# 6. Conclusion
+# 5. Conclusion
 
 The optimized Docker image successfully reduced the application size from:
 
