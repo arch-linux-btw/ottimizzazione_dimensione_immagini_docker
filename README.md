@@ -19,6 +19,7 @@ da 752MB a 53.6MB (-92.9%) applicando best practices reali.
 
 ## Struttura
 
+```
 docker-image-optimization/
 ├── app/
 │   ├── app.py            # Applicazione Flask
@@ -27,6 +28,7 @@ docker-image-optimization/
 ├── Dockerfile.optimized   # Versione ottimizzata (53.6MB)
 ├── .dockerignore          # Esclusioni build
 └── optimization-report.md # Analisi e confronto
+```
 
 ## Come eseguire
 
