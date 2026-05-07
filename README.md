@@ -1,6 +1,6 @@
 # Docker Image Optimization
 
-Progetto scolastico ITS - Ottimizzazione immagini Docker usando 
+Ottimizzazione immagini Docker usando 
 multi-stage build e Alpine Linux.
 
 ## Obiettivo
